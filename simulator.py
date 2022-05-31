@@ -65,15 +65,27 @@ class SimulatedDisplay:
         self.height = height
         self.screen = pygame.display.set_mode((width * scale, height * scale))
 
+    def _prepare_frame(self):
+        self._times_cleared = 0
+        self._timed_presented = 0
+
+    def _end_frame(self):
+        if self._times_cleared != 1:
+            print(f"Simulator warning: display.clear() called {self._times_cleared} times but it should be called exactly once per frame")
+        if self._timed_presented != 1:
+            print(f"Simulator warning: display.present() called {self._timed_presented} times but it should be called exactly once per frame")
+
     def draw_bitmap(self, path, x, y, width, height):
         image = parse_mono_image(path, width, height)
         self.screen.blit(image, (x * scale, y * scale))
 
-    def present(self):
-        pygame.display.flip()
-
     def clear(self):
         self.screen.fill((0, 0, 0))
+        self._times_cleared += 1
+
+    def present(self):
+        pygame.display.flip()
+        self._timed_presented += 1
 
 class SimulatedButton:
     def __init__(self):
@@ -109,8 +121,12 @@ def run():
             elif event.type == pygame.MOUSEBUTTONUP:
                 main.button.pressed = False
 
+        main.display._prepare_frame()
+
         m.loop()
         m.draw()
+
+        main.display._end_frame()
 
         clock.tick(framerate)
 
