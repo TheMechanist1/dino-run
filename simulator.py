@@ -1,6 +1,7 @@
 import pygame
 from PIL import Image
 import sys
+import functools
 import main
 
 # https://www.orientdisplay.com/wp-content/uploads/2021/05/AOM12864A0-1.54WW-ANO.pdf
@@ -11,9 +12,23 @@ scale = 5
 # TODO: main should be managing framerate on its own because this has to be the same everywhere
 framerate = 60
 
+@functools.lru_cache
 def parse_mono_image(path, width, height):
+    print(f"Loading mono image {path}")
+
     with open(path, "rb") as f:
         mono = f.read()
+
+        # Each bit in the mono image represents up to 1 pixel of the image
+        # 1 is white, 0 is black
+        # When a row ends, the rest of the current byte is skipped
+        # A 10x4 image might have data like this:
+        #   11111111 11000000
+        #   00110100 01000000
+        #   00111110 00000000
+        #   10111101 11000000
+        # Notice how the last 6 bits of each row's last byte are empty.
+
         rgb = []
         current_x = 0
         for i in mono:
