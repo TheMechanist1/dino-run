@@ -1,10 +1,10 @@
 from time import sleep
-from machine import Pin, SPI
-from ssd1309 import Display
 
-spi = SPI(0, baudrate=14500000, sck=Pin(18), mosi=Pin(19))
-display = Display(spi, dc=Pin(16), cs=Pin(17), rst=Pin(20))
-button = machine.Pin(21, machine.Pin.IN, machine.Pin.PULL_UP)
+# These will be set by either pico.py or simulator.py
+# See ssd1309.Display
+display = None
+# See machine.Button
+button = None
 
 class Main:
     def __init__(self):
@@ -62,9 +62,3 @@ class Vector2d:
     
     def getY():
         return self.y
-
-if __name__ == "__main__":
-    m = Main();
-    while True:
-        m.loop()
-        m.draw()
