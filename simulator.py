@@ -56,10 +56,11 @@ class SimulatedDisplay:
 
 class SimulatedButton:
     def __init__(self):
-        pass
+        self.pressed = False
 
     def value(self):
-        return 0
+        # Apparently 0 means pressed
+        return 0 if self.pressed else 1
 
 def run():
     pygame.init()
@@ -71,14 +72,22 @@ def run():
     m = main.Main()
 
     while True:
-        clock.tick(framerate)
-
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 sys.exit()
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE or event.key == pygame.K_q:
+                    sys.exit()
+                if event.key == pygame.K_SPACE:
+                    main.button.pressed = True
+            elif event.type == pygame.KEYUP:
+                if event.key == pygame.K_SPACE:
+                    main.button.pressed = False
 
         m.loop()
         m.draw()
+
+        clock.tick(framerate)
 
 if __name__ == '__main__':
     run()
