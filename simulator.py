@@ -4,13 +4,19 @@ import sys
 import functools
 import main
 
+# Physical specs of the screen we have
 # https://www.orientdisplay.com/wp-content/uploads/2021/05/AOM12864A0-1.54WW-ANO.pdf
 width = 128
 height = 64
+
 scale = 8
 
 # TODO: main should be managing framerate on its own because this has to be the same everywhere
 framerate = 60
+
+QUIT_KEYS = [pygame.K_ESCAPE, pygame.K_q]
+
+JUMP_KEYS = [pygame.K_SPACE, pygame.K_UP]
 
 @functools.lru_cache
 def parse_mono_image(path, width, height):
@@ -91,12 +97,12 @@ def run():
             if event.type == pygame.QUIT:
                 sys.exit()
             elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE or event.key == pygame.K_q:
+                if event.key in QUIT_KEYS:
                     sys.exit()
-                if event.key == pygame.K_SPACE:
+                elif event.key in JUMP_KEYS:
                     main.button.pressed = True
             elif event.type == pygame.KEYUP:
-                if event.key == pygame.K_SPACE:
+                if event.key in JUMP_KEYS:
                     main.button.pressed = False
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 main.button.pressed = True
