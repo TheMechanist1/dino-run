@@ -63,6 +63,9 @@ class SimulatedDisplay:
     def __init__(self):
         self.width = width
         self.height = height
+        # Make sure to set the caption before actually creating the window to avoid seeing the wrong
+        # name for a moment.
+        pygame.display.set_caption('Dino Run')
         self.screen = pygame.display.set_mode((width * scale, height * scale))
 
     def _prepare_frame(self):
