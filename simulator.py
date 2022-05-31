@@ -98,6 +98,10 @@ def run():
             elif event.type == pygame.KEYUP:
                 if event.key == pygame.K_SPACE:
                     main.button.pressed = False
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                main.button.pressed = True
+            elif event.type == pygame.MOUSEBUTTONUP:
+                main.button.pressed = False
 
         m.loop()
         m.draw()
