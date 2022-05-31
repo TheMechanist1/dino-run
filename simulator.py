@@ -7,7 +7,7 @@ import main
 # https://www.orientdisplay.com/wp-content/uploads/2021/05/AOM12864A0-1.54WW-ANO.pdf
 width = 128
 height = 64
-scale = 5
+scale = 8
 
 # TODO: main should be managing framerate on its own because this has to be the same everywhere
 framerate = 60
