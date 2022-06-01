@@ -62,7 +62,8 @@ class Obstacle:
         pass
 
     def draw(self):
-        display.draw_bitmap("images/obs-0.mono", 0, display.height - 33 - int(self.y), 32, 33)
+        pass
+        #display.draw_bitmap("images/obs-0.mono", 0, display.height - 33 - int(self.y), 32, 33)
 
 if __name__ == '__main__':
     from ssd1309 import Display
