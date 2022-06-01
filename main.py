@@ -1,4 +1,4 @@
-from time import sleep
+import time
 
 # These will be set later
 # See ssd1309.Display
@@ -19,6 +19,7 @@ class Main:
 
     def draw(self):
         global frames
+        display.clear_buffers()
         self.player.draw()
         self.obs.draw()
         display.present()
@@ -42,15 +43,13 @@ class Dino:
         
         if button.value() == 0 and self.velY < 1 and self.y <= 0.1:
             self.velY += 3
-            print(self.y)
             
     def draw(self):
         global frames
-        display.clear_buffers()
         if frames%10 < 5:
-            display.draw_bitmap("images/DinoStand1.mono", 0, display.height - 47 - int(self.y), 44, 47)
+            display.draw_bitmap("images/DinoStand0.mono", 0, display.height - 24 - int(self.y), 22, 24)
         else:
-            display.draw_bitmap("images/DinoStand2.mono", 0, display.height - 47 - int(self.y), 44, 47)
+            display.draw_bitmap("images/DinoStand1.mono", 0, display.height - 24 - int(self.y), 22, 24)
         
         
 class Obstacle:
@@ -62,8 +61,7 @@ class Obstacle:
         pass
 
     def draw(self):
-        pass
-        #display.draw_bitmap("images/obs-0.mono", 0, display.height - 33 - int(self.y), 32, 33)
+        display.draw_bitmap("images/obs-0.mono", 0, display.height - 33 - int(self.y), 32, 33)
 
 if __name__ == '__main__':
     from ssd1309 import Display
@@ -73,7 +71,15 @@ if __name__ == '__main__':
     display = Display(spi, dc=Pin(16), cs=Pin(17), rst=Pin(20))
     button = machine.Pin(21, machine.Pin.IN, machine.Pin.PULL_UP)
 
+    TICK_LENGTH = 1000
+    currentTime = time.time_ns()
+    lastUpdate = 0
+
     m = Main()
     while True:
-        m.loop()
+        while(currentTime < lastUpdate + TICK_LENGTH):
+            m.loop()
+            lastUpdate += TICK_LENGTH
+        
         m.draw()
+        print(lastUpdate)
