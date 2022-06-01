@@ -8,8 +8,7 @@ button = None
 
 class Main:
     def __init__(self):
-        self.player = Dino(0, 0, 0)
-        
+        self.player = Dino()
         
     def loop(self):
         self.player.loop()
@@ -17,20 +16,18 @@ class Main:
     def draw(self):
         self.player.draw()
         
-
 class Dino:
-    def __init__(self, score, speed, y):
-        self.score = score
-        self.speed = speed
-        self.y = y
-        self.velY = y
+    def __init__(self):
+        self.score = 0
+        self.speed = 0
+        self.y = 0
+        self.velY = 0
         self.accY = -0.1
         
     def loop(self):
         self.velY += self.accY
         if ((self.y + self.velY) >= 0):
             self.y += self.velY
-            display.clear()
         else:
             self.velY = 0
             self.y = 0
@@ -39,11 +36,9 @@ class Dino:
             self.velY += 3
             print(self.y)
             
-    
     def draw(self):
+        display.clear_buffers()
         display.draw_bitmap("images/DinoStand1.mono", 0, display.height - 22 - int(self.y), 20, 22)
-        display.present()
-        
         display.draw_bitmap("images/DinoStand2.mono", 0, display.height - 22 - int(self.y), 20, 22)
         display.present()
         
