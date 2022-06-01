@@ -4,6 +4,17 @@ from framebuf import FrameBuffer, GS8, MONO_HLSB, MONO_HMSB, MONO_VLSB
 from utime import sleep_ms
 
 
+cache = {}
+def read_file_cached(path, size):
+    cache_key = (path, size)
+    if cache_key in cache:
+        return path[cache]
+    with open(path, "rb") as f:
+        print("Reading image " + path)
+        buffer = f.read(size)
+        cache[cache_key] = buffer
+        return buffer
+
 class Display(object):
     """Serial interface for 2.9 inch E-paper display.
     Note:  All coordinates are zero based.
@@ -144,53 +155,52 @@ class Display(object):
             w x h cannot exceed 2048
         """
         array_size = w * h
-        with open(path, "rb") as f:
-            buf = bytearray(f.read(array_size))
-            fb = FrameBuffer(buf, w, h, MONO_HMSB)
+        buf = read_file_cached(path, array_size)
+        fb = FrameBuffer(buf, w, h, MONO_HMSB)
 
-            if rotate == 0 and invert is True:  # 0 degrees
-                fb2 = FrameBuffer(bytearray(array_size), w, h, MONO_HMSB)
-                for y1 in range(h):
-                    for x1 in range(w):
-                        fb2.pixel(x1, y1, fb.pixel(x1, y1) ^ 0x01)
-                fb = fb2
-            elif rotate == 90:  # 90 degrees
-                byte_width = (w - 1) // 8 + 1
-                adj_size = h * byte_width
-                fb2 = FrameBuffer(bytearray(adj_size), h, w, MONO_HMSB)
-                for y1 in range(h):
-                    for x1 in range(w):
-                        if invert is True:
-                            fb2.pixel(y1, x1,
-                                      fb.pixel(x1, (h - 1) - y1) ^ 0x01)
-                        else:
-                            fb2.pixel(y1, x1, fb.pixel(x1, (h - 1) - y1))
-                fb = fb2
-            elif rotate == 180:  # 180 degrees
-                fb2 = FrameBuffer(bytearray(array_size), w, h, MONO_HMSB)
-                for y1 in range(h):
-                    for x1 in range(w):
-                        if invert is True:
-                            fb2.pixel(x1, y1, fb.pixel((w - 1) - x1,
-                                                       (h - 1) - y1) ^ 0x01)
-                        else:
-                            fb2.pixel(x1, y1,
-                                      fb.pixel((w - 1) - x1, (h - 1) - y1))
-                fb = fb2
-            elif rotate == 270:  # 270 degrees
-                byte_width = (w - 1) // 8 + 1
-                adj_size = h * byte_width
-                fb2 = FrameBuffer(bytearray(adj_size), h, w, MONO_HMSB)
-                for y1 in range(h):
-                    for x1 in range(w):
-                        if invert is True:
-                            fb2.pixel(y1, x1,
-                                      fb.pixel((w - 1) - x1, y1) ^ 0x01)
-                        else:
-                            fb2.pixel(y1, x1, fb.pixel((w - 1) - x1, y1))
-                fb = fb2
-            #Fourth arg makes black transparent
-            self.monoFB.blit(fb, x, y, 0)
+        if rotate == 0 and invert is True:  # 0 degrees
+            fb2 = FrameBuffer(bytearray(array_size), w, h, MONO_HMSB)
+            for y1 in range(h):
+                for x1 in range(w):
+                    fb2.pixel(x1, y1, fb.pixel(x1, y1) ^ 0x01)
+            fb = fb2
+        elif rotate == 90:  # 90 degrees
+            byte_width = (w - 1) // 8 + 1
+            adj_size = h * byte_width
+            fb2 = FrameBuffer(bytearray(adj_size), h, w, MONO_HMSB)
+            for y1 in range(h):
+                for x1 in range(w):
+                    if invert is True:
+                        fb2.pixel(y1, x1,
+                                    fb.pixel(x1, (h - 1) - y1) ^ 0x01)
+                    else:
+                        fb2.pixel(y1, x1, fb.pixel(x1, (h - 1) - y1))
+            fb = fb2
+        elif rotate == 180:  # 180 degrees
+            fb2 = FrameBuffer(bytearray(array_size), w, h, MONO_HMSB)
+            for y1 in range(h):
+                for x1 in range(w):
+                    if invert is True:
+                        fb2.pixel(x1, y1, fb.pixel((w - 1) - x1,
+                                                    (h - 1) - y1) ^ 0x01)
+                    else:
+                        fb2.pixel(x1, y1,
+                                    fb.pixel((w - 1) - x1, (h - 1) - y1))
+            fb = fb2
+        elif rotate == 270:  # 270 degrees
+            byte_width = (w - 1) // 8 + 1
+            adj_size = h * byte_width
+            fb2 = FrameBuffer(bytearray(adj_size), h, w, MONO_HMSB)
+            for y1 in range(h):
+                for x1 in range(w):
+                    if invert is True:
+                        fb2.pixel(y1, x1,
+                                    fb.pixel((w - 1) - x1, y1) ^ 0x01)
+                    else:
+                        fb2.pixel(y1, x1, fb.pixel((w - 1) - x1, y1))
+            fb = fb2
+        #Fourth arg makes black transparent
+        self.monoFB.blit(fb, x, y, 0)
 
     def draw_bitmap_raw(self, path, x, y, w, h, invert=False, rotate=0):
         """Load raw bitmap from disc and draw to screen.
