@@ -8,7 +8,7 @@ cache = {}
 def read_file_cached(path, size):
     cache_key = (path, size)
     if cache_key in cache:
-        return path[cache]
+        return path[cache_key]
     with open(path, "rb") as f:
         print("Reading image " + path)
         buffer = f.read(size)
