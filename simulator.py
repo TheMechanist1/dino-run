@@ -40,9 +40,6 @@ def parse_mono_image(path, width, height):
         for i in mono:
             for j in range(8):
                 current_x += 1
-                if current_x > width:
-                    current_x = 0
-                    break
                 bit = i & (1 << j)
                 if bit == 0:
                     rgb.append(0)
@@ -52,6 +49,11 @@ def parse_mono_image(path, width, height):
                     rgb.append(255)
                     rgb.append(255)
                     rgb.append(255)
+                # Check this at the end of instead of the start, otherwise we skip the last bit of each row
+                # if the width is a multiple of 8.
+                if current_x >= width:
+                    current_x = 0
+                    break
 
     image = Image.frombytes('RGB', (width, height), bytes(rgb))
     scaled_width = width * scale
