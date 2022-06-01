@@ -55,6 +55,10 @@ def parse_mono_image(path, width, height):
                     current_x = 0
                     break
 
+    expected_size = width * height * 3
+    if len(rgb) != expected_size:
+        print(f"Simulator warning: {path} expected to be {width}x{height} but it's not. Your code or the image is wrong. Expect graphical errors.")
+
     image = Image.frombytes('RGB', (width, height), bytes(rgb))
     scaled_width = width * scale
     scaled_height = height * scale
