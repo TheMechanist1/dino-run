@@ -6,13 +6,12 @@ from utime import sleep_ms
 
 cache = {}
 def read_file_cached(path, size):
-    cache_key = (path, size)
-    if cache_key in cache:
-        return path[cache_key]
+    if path in cache:
+        return path[path]
     with open(path, "rb") as f:
         print("Reading image " + path)
         buffer = f.read(size)
-        cache[cache_key] = buffer
+        cache[path] = buffer
         return buffer
 
 class Display(object):
