@@ -42,15 +42,14 @@ class Dino:
         
         if button.value() == 0 and self.velY < 1 and self.y <= 0.1:
             self.velY += 3
-            print(self.y)
             
     def draw(self):
         global frames
         display.clear_buffers()
         if frames%10 < 5:
-            display.draw_bitmap("images/DinoStand1.mono", 0, display.height - 47 - int(self.y), 44, 47)
+            display.draw_bitmap("images/DinoStand0.mono", 0, display.height - 24 - int(self.y), 22, 24)
         else:
-            display.draw_bitmap("images/DinoStand2.mono", 0, display.height - 47 - int(self.y), 44, 47)
+            display.draw_bitmap("images/DinoStand1.mono", 0, display.height - 24 - int(self.y), 22, 24)
         
         
 class Obstacle:
