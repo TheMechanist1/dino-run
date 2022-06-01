@@ -6,6 +6,8 @@ display = None
 # See machine.Button
 button = None
 
+frames = 0
+
 class Main:
     def __init__(self):
         self.player = Dino()
@@ -14,7 +16,9 @@ class Main:
         self.player.loop()
 
     def draw(self):
+        global frames
         self.player.draw()
+        frames += 1
         
 class Dino:
     def __init__(self):
@@ -37,9 +41,12 @@ class Dino:
             print(self.y)
             
     def draw(self):
+        global frames
         display.clear_buffers()
-        display.draw_bitmap("images/DinoStand1.mono", 0, display.height - 22 - int(self.y), 20, 22)
-        display.draw_bitmap("images/DinoStand2.mono", 0, display.height - 22 - int(self.y), 20, 22)
+        if frames%10 < 5:
+            display.draw_bitmap("images/DinoStand1.mono", 0, display.height - 22 - int(self.y), 20, 22)
+        else:
+            display.draw_bitmap("images/DinoStand2.mono", 0, display.height - 22 - int(self.y), 20, 22)
         display.present()
         
 class Obstacle:
