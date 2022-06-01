@@ -71,9 +71,7 @@ if __name__ == '__main__':
     display = Display(spi, dc=Pin(16), cs=Pin(17), rst=Pin(20))
     button = machine.Pin(21, machine.Pin.IN, machine.Pin.PULL_UP)
 
-    game.display = display
-    game.button = button
-    m = game.Main()
+    m = Main()
     while True:
         m.loop()
         m.draw()
