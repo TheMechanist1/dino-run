@@ -2,7 +2,7 @@ import pygame
 from PIL import Image
 import sys
 import functools
-import main
+import game
 
 # Physical specs of the screen we have
 # https://www.orientdisplay.com/wp-content/uploads/2021/05/AOM12864A0-1.54WW-ANO.pdf
@@ -103,9 +103,9 @@ def run():
 
     clock = pygame.time.Clock()
 
-    main.display = SimulatedDisplay()
-    main.button = SimulatedButton()
-    m = main.Main()
+    game.display = SimulatedDisplay()
+    game.button = SimulatedButton()
+    m = game.Main()
 
     while True:
         for event in pygame.event.get():
@@ -115,21 +115,21 @@ def run():
                 if event.key in QUIT_KEYS:
                     sys.exit()
                 elif event.key in JUMP_KEYS:
-                    main.button.pressed = True
+                    game.button.pressed = True
             elif event.type == pygame.KEYUP:
                 if event.key in JUMP_KEYS:
-                    main.button.pressed = False
+                    game.button.pressed = False
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                main.button.pressed = True
+                game.button.pressed = True
             elif event.type == pygame.MOUSEBUTTONUP:
-                main.button.pressed = False
+                game.button.pressed = False
 
-        main.display._prepare_frame()
+        game.display._prepare_frame()
 
         m.loop()
         m.draw()
 
-        main.display._end_frame()
+        game.display._end_frame()
 
         clock.tick(framerate)
 
