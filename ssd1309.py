@@ -154,7 +154,7 @@ class Display(object):
             w x h cannot exceed 2048
         """
         array_size = w * h
-        buf = read_file_cached(path, array_size)
+        buf = bytearray(read_file_cached(path, array_size))
         fb = FrameBuffer(buf, w, h, MONO_HMSB)
 
         if rotate == 0 and invert is True:  # 0 degrees
