@@ -11,13 +11,17 @@ frames = 0
 class Main:
     def __init__(self):
         self.player = Dino()
+        self.obs = Obstacle(0, 0)
         
     def loop(self):
         self.player.loop()
+        self.obs.loop()
 
     def draw(self):
         global frames
         self.player.draw()
+        self.obs.draw()
+        display.present()
         frames += 1
         
 class Dino:
@@ -47,12 +51,18 @@ class Dino:
             display.draw_bitmap("images/DinoStand1.mono", 0, display.height - 22 - int(self.y), 20, 22)
         else:
             display.draw_bitmap("images/DinoStand2.mono", 0, display.height - 22 - int(self.y), 20, 22)
-        display.present()
+        
         
 class Obstacle:
     def __init__(self, x, y):
         self.x = x
         self.y = y
+
+    def loop(self):
+        pass
+
+    def draw(self):
+        display.draw_bitmap("images/obs-0.mono", 0, display.height - 33 - int(self.y), 32, 33)
 
 if __name__ == '__main__':
     from ssd1309 import Display
