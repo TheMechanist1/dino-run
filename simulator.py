@@ -18,6 +18,13 @@ QUIT_KEYS = [pygame.K_ESCAPE, pygame.K_q]
 
 JUMP_KEYS = [pygame.K_SPACE, pygame.K_UP]
 
+# ANSI terminal escape codes
+YELLOW = "\x1b[33m"
+RESET = "\x1b[0m"
+
+def print_warning(message):
+    print(f"{YELLOW}Simulator warning: {message}{RESET}")
+
 @functools.lru_cache
 def parse_mono_image(path, width, height):
     print(f"Loading mono image {path}")
@@ -61,7 +68,7 @@ def parse_mono_image(path, width, height):
 
     expected_size = width * height * 4
     if len(rgba) != expected_size:
-        print(f"Simulator warning: {path} expected to be {width}x{height} but it's not. Your code or the image is wrong. Expect graphical errors.")
+        print_warning(f"{path} expected to be {width}x{height} but it's not. Your code or the image is wrong. Expect graphical errors.")
 
     image = Image.frombytes("RGBA", (width, height), bytes(rgba))
     scaled_width = width * scale
@@ -84,16 +91,16 @@ class SimulatedDisplay:
 
     def _end_frame(self):
         if self._times_cleared != 1:
-            print(f"Simulator warning: display.clear_buffers() called {self._times_cleared} times but it should be called exactly once per frame")
+            print_warning(f"display.clear_buffers() called {self._times_cleared} times but it should be called exactly once per frame")
         if self._timed_presented != 1:
-            print(f"Simulator warning: display.present() called {self._timed_presented} times but it should be called exactly once per frame")
+            print_warning(f"display.present() called {self._timed_presented} times but it should be called exactly once per frame")
 
     def draw_bitmap(self, path, x, y, width, height):
         image = parse_mono_image(path, width, height)
         self.screen.blit(image, (x * scale, y * scale))
 
     def clear(self):
-        print("Simulator warning: display.clear_buffers() should be used instead of display.clear()");
+        print_warning("display.clear_buffers() should be used instead of display.clear()");
         self.clear_buffers()
         self.present()
 
