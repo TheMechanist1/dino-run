@@ -35,35 +35,39 @@ def parse_mono_image(path, width, height):
         #   10111101 11000000
         # Notice how the last 6 bits of each row's last byte are empty.
 
-        rgb = []
+        rgba = []
         current_x = 0
         for i in mono:
             for j in range(8):
                 current_x += 1
                 bit = i & (1 << j)
                 if bit == 0:
-                    rgb.append(0)
-                    rgb.append(0)
-                    rgb.append(0)
+                    # Transparent black
+                    rgba.append(0)
+                    rgba.append(0)
+                    rgba.append(0)
+                    rgba.append(0)
                 else:
-                    rgb.append(255)
-                    rgb.append(255)
-                    rgb.append(255)
+                    # Pure white
+                    rgba.append(255)
+                    rgba.append(255)
+                    rgba.append(255)
+                    rgba.append(255)
                 # Check this at the end of instead of the start, otherwise we skip the last bit of each row
                 # if the width is a multiple of 8.
                 if current_x >= width:
                     current_x = 0
                     break
 
-    expected_size = width * height * 3
-    if len(rgb) != expected_size:
+    expected_size = width * height * 4
+    if len(rgba) != expected_size:
         print(f"Simulator warning: {path} expected to be {width}x{height} but it's not. Your code or the image is wrong. Expect graphical errors.")
 
-    image = Image.frombytes('RGB', (width, height), bytes(rgb))
+    image = Image.frombytes("RGBA", (width, height), bytes(rgba))
     scaled_width = width * scale
     scaled_height = height * scale
     resized_image = image.resize((scaled_width, scaled_height), resample=Image.NONE)
-    return pygame.image.frombuffer(resized_image.tobytes(), (scaled_width, scaled_height), "RGB")
+    return pygame.image.frombuffer(resized_image.tobytes(), (scaled_width, scaled_height), "RGBA")
 
 class SimulatedDisplay:
     def __init__(self):
