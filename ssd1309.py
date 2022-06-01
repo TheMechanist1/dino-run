@@ -189,8 +189,8 @@ class Display(object):
                         else:
                             fb2.pixel(y1, x1, fb.pixel((w - 1) - x1, y1))
                 fb = fb2
-
-            self.monoFB.blit(fb, x, y)
+            #Fourth arg makes black transparent
+            self.monoFB.blit(fb, x, y, 0)
 
     def draw_bitmap_raw(self, path, x, y, w, h, invert=False, rotate=0):
         """Load raw bitmap from disc and draw to screen.

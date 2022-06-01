@@ -77,9 +77,9 @@ if __name__ == '__main__':
 
     m = Main()
     while True:
-        while(currentTime < lastUpdate + TICK_LENGTH):
-            m.loop()
-            lastUpdate += TICK_LENGTH
-        
+        preframe = time.ticks_ms()
+        m.loop()
         m.draw()
-        print(lastUpdate)
+        time.sleep_ms(16 - time.ticks_diff(time.ticks_ms(), preframe))
+        print(((time.ticks_diff(time.ticks_ms(), preframe))))
+        #time.sleep(correct)
