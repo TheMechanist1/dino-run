@@ -48,9 +48,9 @@ class Dino:
         global frames
         display.clear_buffers()
         if frames%10 < 5:
-            display.draw_bitmap("images/DinoStand1.mono", 0, display.height - 22 - int(self.y), 20, 22)
+            display.draw_bitmap("images/DinoStand1.mono", 0, display.height - 47 - int(self.y), 44, 47)
         else:
-            display.draw_bitmap("images/DinoStand2.mono", 0, display.height - 22 - int(self.y), 20, 22)
+            display.draw_bitmap("images/DinoStand2.mono", 0, display.height - 47 - int(self.y), 44, 47)
         
         
 class Obstacle:
