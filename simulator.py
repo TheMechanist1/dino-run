@@ -2,7 +2,7 @@ import pygame
 from PIL import Image
 import sys
 import functools
-import game
+import main
 
 # Physical specs of the screen we have
 # https://www.orientdisplay.com/wp-content/uploads/2021/05/AOM12864A0-1.54WW-ANO.pdf
@@ -74,7 +74,7 @@ class SimulatedDisplay:
 
     def _end_frame(self):
         if self._times_cleared != 1:
-            print(f"Simulator warning: display.clear() called {self._times_cleared} times but it should be called exactly once per frame")
+            print(f"Simulator warning: display.clear_buffers() called {self._times_cleared} times but it should be called exactly once per frame")
         if self._timed_presented != 1:
             print(f"Simulator warning: display.present() called {self._timed_presented} times but it should be called exactly once per frame")
 
@@ -83,6 +83,11 @@ class SimulatedDisplay:
         self.screen.blit(image, (x * scale, y * scale))
 
     def clear(self):
+        print("Simulator warning: display.clear_buffers() should be used instead of display.clear()");
+        self.clear_buffers()
+        self.present()
+
+    def clear_buffers(self):
         self.screen.fill((0, 0, 0))
         self._times_cleared += 1
 
@@ -103,9 +108,9 @@ def run():
 
     clock = pygame.time.Clock()
 
-    game.display = SimulatedDisplay()
-    game.button = SimulatedButton()
-    m = game.Main()
+    main.display = SimulatedDisplay()
+    main.button = SimulatedButton()
+    m = main.Main()
 
     while True:
         for event in pygame.event.get():
@@ -115,21 +120,21 @@ def run():
                 if event.key in QUIT_KEYS:
                     sys.exit()
                 elif event.key in JUMP_KEYS:
-                    game.button.pressed = True
+                    main.button.pressed = True
             elif event.type == pygame.KEYUP:
                 if event.key in JUMP_KEYS:
-                    game.button.pressed = False
+                    main.button.pressed = False
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                game.button.pressed = True
+                main.button.pressed = True
             elif event.type == pygame.MOUSEBUTTONUP:
-                game.button.pressed = False
+                main.button.pressed = False
 
-        game.display._prepare_frame()
+        main.display._prepare_frame()
 
         m.loop()
         m.draw()
 
-        game.display._end_frame()
+        main.display._end_frame()
 
         clock.tick(framerate)
 
