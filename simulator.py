@@ -3,6 +3,7 @@ from PIL import Image
 import sys
 import functools
 import main
+import generate_mono_images
 
 # Physical specs of the screen we have
 # https://www.orientdisplay.com/wp-content/uploads/2021/05/AOM12864A0-1.54WW-ANO.pdf
@@ -121,6 +122,8 @@ class SimulatedButton:
         return 0 if self.pressed else 1
 
 def run():
+    generate_mono_images.generate()
+
     pygame.init()
 
     clock = pygame.time.Clock()
