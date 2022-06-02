@@ -85,6 +85,11 @@ class FrameBuffer:
             return (0, 0, 0, 0)
         return (255, 255, 255, 255)
 
+    def pygame_to_color(self, pygame_color) -> int:
+        if pygame_color[0] == 0:
+            return 0
+        return 1
+
     def fill(self, color: int):
         self.surface.fill(self.color_to_pygame(color))
 
@@ -93,3 +98,9 @@ class FrameBuffer:
 
     def blit(self, fb, x: int, y: int, key=-1):
         self.surface.blit(fb.surface, (x, y))
+
+    def pixel(self, x, y, color=-1):
+        if color == -1:
+            color = self.surface.get_at((x, y))
+            return self.pygame_to_color(color)
+        self.surface.set_at((x, y), self.color_to_pygame(color))
