@@ -1,34 +1,56 @@
+from ssd1309 import Display
+from machine import Pin, SPI
+from xglcd_font import XglcdFont
 import time
+import random
 
-# These will be set later
-# See ssd1309.Display
-display = None
-# See machine.Button
-button = None
-
-bally = None
+spi = SPI(0, baudrate=14500000, sck=Pin(18), mosi=Pin(19))
+display = Display(spi, dc=Pin(16), cs=Pin(17), rst=Pin(20))
+button = machine.Pin(21, machine.Pin.IN, machine.Pin.PULL_UP)
+reset = machine.Pin(22, machine.Pin.IN, machine.Pin.PULL_UP)
+bally = XglcdFont('fonts/Bally7x9.c', 7, 9)
 
 frames = 0
-
-end = False
 
 class Main:
     def __init__(self):
         self.player = Dino()
         self.obs = [Obstacle(0)]
+        self.end = False
+        self.startTime = time.ticks_ms()
+        
+        
+    def reset(self):
+        self.player = None
+        self.obs = None
+        self.player = Dino()
+        self.obs = [Obstacle(0)]
+        self.end = False
+        self.startTime = time.ticks_ms()
+    
+    def mainGameLoop(self):
+        while self.end != True:
+            preframe = time.ticks_ms()
+            self.loop()
+            self.draw()
+            time.sleep_ms(16 - time.ticks_diff(time.ticks_ms(), preframe))
+            
+        if(reset.value() == 0):
+            self.reset()
+            self.end = False
         
     def detectCollision(self, dino, obs):
         return (dino.x < obs.x + obs.imgWidth and dino.x + dino.imgWidth > obs.x and
                 dino.y < obs.y + obs.imgHeight and dino.imgHeight + dino.y > obs.y)
         
     def loop(self):
-        global end
         self.player.loop()
+        self.player.score = time.ticks_diff(time.ticks_ms(), self.startTime)
         for o in self.obs:
             if self.detectCollision(self.player, o):
                 print("bruh")
                 self.obs.pop(0)
-                end = True
+                self.end = True
                 return
             o.speed = self.player.speed
             if o.isOffScreen():
@@ -68,7 +90,7 @@ class Dino:
         
         if button.value() == 0 and self.velY < 1 and self.y <= 0.1:
             self.velY += 3
-        self.score = time.ticks_diff(time.ticks_ms(), startTime)
+        
         if(self.score%10000 <= 16):
             self.speed += 0.25
             print(self.speed)
@@ -80,9 +102,10 @@ class Dino:
         else:
             display.draw_bitmap("images/DinoStand1.mono", 0, display.height - self.imgHeight - int(self.y), self.imgWidth, self.imgHeight)
         
-        textWidth = bally.measure_text(str(self.score))
-        display.draw_text(display.width - textWidth, 0, str(self.score), bally)
-        
+        scoreWidth = bally.measure_text(str(self.score))
+        speedWidth = bally.measure_text(str(self.speed))
+        display.draw_text(display.width - scoreWidth, 0, str(self.score), bally)
+        display.draw_text(display.width - speedWidth, 17, str(self.speed), bally)
         
 class Obstacle:
     def __init__(self, obsType):
@@ -118,20 +141,6 @@ class Obstacle:
         display.draw_bitmap(self.imgPath, int(self.x), display.height - self.imgHeight, self.imgWidth, self.imgHeight)
 
 if __name__ == '__main__':
-    from ssd1309 import Display
-    from machine import Pin, SPI
-    from xglcd_font import XglcdFont
-    import random
-
-    spi = SPI(0, baudrate=14500000, sck=Pin(18), mosi=Pin(19))
-    display = Display(spi, dc=Pin(16), cs=Pin(17), rst=Pin(20))
-    button = machine.Pin(21, machine.Pin.IN, machine.Pin.PULL_UP)
-    bally = XglcdFont('fonts/Bally7x9.c', 7, 9)
-    startTime = time.ticks_ms()
-    
     m = Main()
-    while not end:
-        preframe = time.ticks_ms()
-        m.loop()
-        m.draw()
-        time.sleep_ms(16 - time.ticks_diff(time.ticks_ms(), preframe))
+    while True:
+        m.mainGameLoop()
