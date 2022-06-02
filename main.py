@@ -6,6 +6,8 @@ display = None
 # See machine.Button
 button = None
 
+bally = None
+
 frames = 0
 
 class Main:
@@ -43,6 +45,7 @@ class Dino:
         
         if button.value() == 0 and self.velY < 1 and self.y <= 0.1:
             self.velY += 3
+            self.score += 1
             
     def draw(self):
         global frames
@@ -50,6 +53,9 @@ class Dino:
             display.draw_bitmap("images/DinoStand0.mono", 0, display.height - 24 - int(self.y), 22, 24)
         else:
             display.draw_bitmap("images/DinoStand1.mono", 0, display.height - 24 - int(self.y), 22, 24)
+        
+        textWidth = bally.measure_text(str(self.score))
+        display.draw_text(display.width - textWidth, 0, str(self.score), bally)
         
         
 class Obstacle:
@@ -66,14 +72,12 @@ class Obstacle:
 if __name__ == '__main__':
     from ssd1309 import Display
     from machine import Pin, SPI
+    from xglcd_font import XglcdFont
 
     spi = SPI(0, baudrate=14500000, sck=Pin(18), mosi=Pin(19))
     display = Display(spi, dc=Pin(16), cs=Pin(17), rst=Pin(20))
     button = machine.Pin(21, machine.Pin.IN, machine.Pin.PULL_UP)
-
-    TICK_LENGTH = 1000
-    currentTime = time.time_ns()
-    lastUpdate = 0
+    bally = XglcdFont('fonts/Bally7x9.c', 7, 9)
 
     m = Main()
     while True:
@@ -81,5 +85,3 @@ if __name__ == '__main__':
         m.loop()
         m.draw()
         time.sleep_ms(16 - time.ticks_diff(time.ticks_ms(), preframe))
-        print(((time.ticks_diff(time.ticks_ms(), preframe))))
-        #time.sleep(correct)
