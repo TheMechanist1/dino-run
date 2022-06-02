@@ -55,7 +55,6 @@ class Main:
         self.player.loop()
         for o in self.obs:
             if self.detect_collision(self.player, o):
-                self.obs.pop(0)
                 self.end = True
                 print(self.player.score)
                 return
