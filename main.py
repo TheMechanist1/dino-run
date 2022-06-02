@@ -13,7 +13,7 @@ frames = 0
 class Main:
     def __init__(self):
         self.player = Dino()
-        self.obs = Obstacle(0, 0)
+        self.obs = Obstacle(0)
         
     def loop(self):
         self.player.loop()
@@ -59,15 +59,34 @@ class Dino:
         
         
 class Obstacle:
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
-
+    def __init__(self, obsType):
+        if obsType == 0:
+            self.imgPath = "images/obs-0.mono"
+            self.imgWidth = 32
+            self.imgHeight = 33
+        elif obsType == 1:
+            self.imgPath = "images/obs-1.mono"
+            self.imgWidth = 32
+            self.imgHeight = 33
+        elif obsType == 2:
+            self.imgPath = "images/obs-2.mono"
+            self.imgWidth = 32
+            self.imgHeight = 33
+        elif obsType > 2:
+            raise Exception("Obstacale Type should be 0-2. You put " + str(obsType))
+        else:
+            raise Exception("Bro what are you doing?")
+        
+        self.x = display.width
+    
+    def isOffScreen(self):
+        return self.x <= 0 - self.imgWidth
+    
     def loop(self):
         pass
 
     def draw(self):
-        display.draw_bitmap("images/obs-0.mono", 0, display.height - 33 - int(self.y), 32, 33)
+        display.draw_bitmap(self.imgPath, self.x, display.height - 33, 32, 33)
 
 if __name__ == '__main__':
     from ssd1309 import Display
