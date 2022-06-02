@@ -15,6 +15,10 @@ class Main:
         self.player = Dino()
         self.obs = Obstacle(0)
         
+    def detectCollision(self, dino, obs):
+        return (dino.x < obs.x + obs.imgWidth and dino.x + dino.imgWidth > obs.x and
+                dino.y < obs.y + obs.imgHeight and dino.imgHeight + dino.y > obs.y)
+        
     def loop(self):
         self.player.loop()
         self.obs.loop()
@@ -31,9 +35,12 @@ class Dino:
     def __init__(self):
         self.score = 0
         self.speed = 0
-        self.y = 0
         self.velY = 0
         self.accY = -0.1
+        self.imgWidth = 22
+        self.imgHeight = 24
+        self.x = 0
+        self.y = 0
         
     def loop(self):
         self.velY += self.accY
@@ -45,14 +52,13 @@ class Dino:
         
         if button.value() == 0 and self.velY < 1 and self.y <= 0.1:
             self.velY += 3
-            self.score += 1
             
     def draw(self):
         global frames
         if frames%10 < 5:
-            display.draw_bitmap("images/DinoStand0.mono", 0, display.height - 24 - int(self.y), 22, 24)
+            display.draw_bitmap("images/DinoStand0.mono", 0, display.height - self.imgHeight - int(self.y), self.imgWidth, self.imgHeight)
         else:
-            display.draw_bitmap("images/DinoStand1.mono", 0, display.height - 24 - int(self.y), 22, 24)
+            display.draw_bitmap("images/DinoStand1.mono", 0, display.height - self.imgHeight - int(self.y), self.imgWidth, self.imgHeight)
         
         textWidth = bally.measure_text(str(self.score))
         display.draw_text(display.width - textWidth, 0, str(self.score), bally)
@@ -78,6 +84,7 @@ class Obstacle:
             raise Exception("Bro what are you doing?")
         
         self.x = display.width
+        self.y = 0
     
     def isOffScreen(self):
         return self.x <= 0 - self.imgWidth
