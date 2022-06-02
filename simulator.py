@@ -1,7 +1,14 @@
+import time
 import pygame
 from PIL import Image
 import sys
 import functools
+
+# Implement MicroPython time APIs
+# Has to happen before the rest of the game loads
+time.ticks_diff = lambda a, b: b - a
+time.ticks_ms = lambda: time.time() / 1000.0
+
 import main
 import generate_mono_images
 
