@@ -122,7 +122,7 @@ class Obstacle:
             self.img_width = 24
             self.img_height = 25
         elif obs_type > 2:
-            raise Exception("Obstacale Type should be 0-2. You put " + str(obs_type))
+            raise Exception("Obstacle Type should be 0-2. You put " + str(obs_type))
         else:
             raise Exception("Bro what are you doing?")
         
