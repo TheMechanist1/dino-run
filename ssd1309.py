@@ -1,18 +1,19 @@
-from math import cos, sin, pi, radians
+from math import ceil, cos, floor, sin, pi, radians
 from micropython import const
 from framebuf import FrameBuffer, GS8, MONO_HLSB, MONO_HMSB, MONO_VLSB
 from utime import sleep_ms
 
 
 cache = {}
-def read_file_cached(path, size):
+def read_mono_framebuffer(path, width, height):
     if path in cache:
         return cache[path]
     with open(path, "rb") as f:
         print("Reading image " + path)
-        buffer = f.read(size)
-        cache[path] = buffer
-        return buffer
+        buffer = bytearray(f.read())
+        framebuffer = FrameBuffer(buffer, width, height, MONO_HMSB)
+        cache[path] = framebuffer
+        return framebuffer
 
 class Display(object):
     """Serial interface for 2.9 inch E-paper display.
@@ -154,8 +155,7 @@ class Display(object):
             w x h cannot exceed 2048
         """
         array_size = w * h
-        buf = bytearray(read_file_cached(path, array_size))
-        fb = FrameBuffer(buf, w, h, MONO_HMSB)
+        fb = read_mono_framebuffer(path, w, h)
 
         if rotate == 0 and invert is True:  # 0 degrees
             fb2 = FrameBuffer(bytearray(array_size), w, h, MONO_HMSB)
@@ -855,3 +855,29 @@ class Display(object):
         self.cs(0)
         self.spi.write(data)
         self.cs(1)
+
+    def bitmaps_collide(self, bitmap1, x1, y1, w1, h1, bitmap2, x2, y2, w2, h2):
+        # this is horrible
+        left1 = floor(x1)
+        left2 = floor(x2)
+        top1 = floor(y1)
+        top2 = floor(y2)
+        right1 = ceil(x1 + w1)
+        right2 = ceil(y1 + w2)
+        bottom1 = ceil(y1 + h1)
+        bottom2 = ceil(y2 + h2)
+        if left1 < right2 and right1 > left2 and top1 < bottom2 and bottom1 > top2:
+            bitmap1_data = read_mono_framebuffer(bitmap1, w1, h1)
+            bitmap2_data = read_mono_framebuffer(bitmap2, w2, h2)
+            intersect_left = max(left1, left2)
+            intersect_right = min(right1, right2)
+            intersect_top = max(top1, top2)
+            intersect_bottom = min(bottom1, bottom2)
+            for x in range(intersect_left - 1, intersect_right + 1):
+                for y in range(intersect_top - 1, intersect_bottom + 1):
+                    try:
+                        if bitmap1_data.pixel(x - left1, y - top1) != 0 and bitmap2_data.pixel(x - left2, y - top2) != 0:
+                            return True
+                    except IndexError:
+                        pass
+        return False
