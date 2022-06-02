@@ -33,16 +33,19 @@ class Main:
         pass
 
     def main_game_loop(self):
-        while self.end != True:
+        while True:
             preframe = time.ticks_ms()
             self.environment_specific_logic()
-            self.loop()
+
+            if not self.end:
+                self.loop()
+            else:
+                if reset.value() == 0:
+                    self.reset()
+                    self.end = False
+
             self.draw()
             time.sleep_ms(16 - time.ticks_diff(time.ticks_ms(), preframe))
-            
-        if(reset.value() == 0):
-            self.reset()
-            self.end = False
         
     def detect_collision(self, dino, obs):
         return (dino.x < obs.x + obs.img_width and dino.x + dino.img_width > obs.x and
