@@ -86,15 +86,10 @@ class FrameBuffer:
         return (255, 255, 255, 255)
 
     def fill(self, color: int):
-        self.surface.set_colorkey(None)
         self.surface.fill(self.color_to_pygame(color))
 
     def fill_rect(self, x: int, y: int, width: int, height: int, color: int):
         pygame.draw.rect(self.surface, self.color_to_pygame(color), (x, y, width, height))
 
     def blit(self, fb, x: int, y: int, key=-1):
-        if key == -1:
-            self.surface.set_colorkey(None)
-        else:
-            self.surface.set_colorkey(self.color_to_pygame(key))
         self.surface.blit(fb.surface, (x, y))
