@@ -45,7 +45,6 @@ class Main:
         
     def loop(self):
         self.player.loop()
-        self.player.score = time.ticks_diff(time.ticks_ms(), self.start_time)
         for o in self.obs:
             if self.detect_collision(self.player, o):
                 print("bruh")
@@ -55,6 +54,10 @@ class Main:
             o.speed = self.player.speed
             if o.is_off_screen():
                 self.obs.pop(0)
+                self.player.score += 5
+                if self.player.score%25 == 0:
+                    self.player.speed += 0.25
+                    print(self.player.speed)
                 new_obs = Obstacle(int(random.uniform(0,2)))
                 new_obs.x += random.uniform(0,5) + 30
                 self.obs.append(new_obs)
@@ -90,10 +93,6 @@ class Dino:
         
         if button.value() == 0 and self.vel_y < 1 and self.y <= 0.1:
             self.vel_y += 3
-        
-        if(self.score%10000 <= 16):
-            self.speed += 0.25
-            print(self.speed)
             
     def draw(self):
         global frames
