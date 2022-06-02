@@ -6,8 +6,8 @@ import random
 
 spi = SPI(0, baudrate=14500000, sck=Pin(18), mosi=Pin(19))
 display = Display(spi, dc=Pin(16), cs=Pin(17), rst=Pin(20))
-button = machine.Pin(21, machine.Pin.IN, machine.Pin.PULL_UP)
-reset = machine.Pin(22, machine.Pin.IN, machine.Pin.PULL_UP)
+button = Pin(21, Pin.IN, Pin.PULL_UP)
+reset = Pin(22, Pin.IN, Pin.PULL_UP)
 bally = XglcdFont('fonts/Bally7x9.c', 7, 9)
 
 frames = 0
