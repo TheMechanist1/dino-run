@@ -53,7 +53,7 @@ class Main:
                 self.end = True
                 return
             o.speed = self.player.speed
-            if o.isOffScreen():
+            if o.is_off_screen():
                 self.obs.pop(0)
                 new_obs = Obstacle(int(random.uniform(0,2)))
                 new_obs.x += random.uniform(0,5) + 30
@@ -130,7 +130,7 @@ class Obstacle:
         self.y = 0
         self.speed = 1.5
     
-    def isOffScreen(self):
+    def is_off_screen(self):
         return self.x <= 0 - self.img_width
     
     def loop(self):
