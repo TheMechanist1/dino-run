@@ -6,8 +6,8 @@ import random
 
 spi = SPI(0, baudrate=14500000, sck=Pin(18), mosi=Pin(19))
 display = Display(spi, dc=Pin(16), cs=Pin(17), rst=Pin(20))
-button = machine.Pin(21, machine.Pin.IN, machine.Pin.PULL_UP)
-reset = machine.Pin(22, machine.Pin.IN, machine.Pin.PULL_UP)
+button = Pin(21, Pin.IN, Pin.PULL_UP)
+reset = Pin(22, Pin.IN, Pin.PULL_UP)
 bally = XglcdFont('fonts/Bally7x9.c', 7, 9)
 
 frames = 0
@@ -27,17 +27,25 @@ class Main:
         self.obs = [Obstacle(0)]
         self.end = False
         self.start_time = time.ticks_ms()
-    
+
+    def environment_specific_logic(self):
+        # Used by simulator.
+        pass
+
     def main_game_loop(self):
-        while self.end != True:
+        while True:
             preframe = time.ticks_ms()
-            self.loop()
+            self.environment_specific_logic()
+
+            if not self.end:
+                self.loop()
+            else:
+                if reset.value() == 0:
+                    self.reset()
+                    self.end = False
+
             self.draw()
             time.sleep_ms(16 - time.ticks_diff(time.ticks_ms(), preframe))
-            
-        if(reset.value() == 0):
-            self.reset()
-            self.end = False
         
     def detect_collision(self, dino, obs):
         return (dino.x < obs.x + obs.img_width and dino.x + dino.img_width > obs.x and
