@@ -19,7 +19,7 @@ def parse_mono_hmsb(hmsb_data: bytearray, width: int, height: int) -> pygame.Sur
     #   00111110 00000000
     #   10111101 11000000
     # Notice how the last 6 bits of each row's last byte are empty.
-    surface = pygame.Surface((width, height))
+    surface = pygame.Surface((width, height), pygame.SRCALPHA)
     x = 0
     y = 0
     for i in hmsb_data:
