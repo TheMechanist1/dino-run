@@ -27,10 +27,15 @@ class Main:
         self.obs = [Obstacle(0)]
         self.end = False
         self.start_time = time.ticks_ms()
-    
+
+    def environment_specific_logic(self):
+        # Used by simulator.
+        pass
+
     def main_game_loop(self):
         while self.end != True:
             preframe = time.ticks_ms()
+            self.environment_specific_logic()
             self.loop()
             self.draw()
             time.sleep_ms(16 - time.ticks_diff(time.ticks_ms(), preframe))
