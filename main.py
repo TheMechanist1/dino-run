@@ -47,9 +47,9 @@ class Main:
         self.player.loop()
         for o in self.obs:
             if self.detect_collision(self.player, o):
-                print("bruh")
                 self.obs.pop(0)
                 self.end = True
+                print(self.player.score)
                 return
             o.speed = self.player.speed
             if o.is_off_screen():
@@ -57,7 +57,6 @@ class Main:
                 self.player.score += 5
                 if self.player.score%25 == 0:
                     self.player.speed += 0.25
-                    print(self.player.speed)
                 new_obs = Obstacle(int(random.uniform(0,2)))
                 new_obs.x += random.uniform(0,5) + 30
                 self.obs.append(new_obs)
