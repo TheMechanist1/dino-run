@@ -88,16 +88,16 @@ class Obstacle:
     def __init__(self, obsType):
         if obsType == 0:
             self.imgPath = "images/obs-0.mono"
-            self.imgWidth = 32
-            self.imgHeight = 33
+            self.imgWidth = 24
+            self.imgHeight = 25
         elif obsType == 1:
             self.imgPath = "images/obs-1.mono"
-            self.imgWidth = 32
-            self.imgHeight = 33
+            self.imgWidth = 24
+            self.imgHeight = 25
         elif obsType == 2:
             self.imgPath = "images/obs-2.mono"
-            self.imgWidth = 32
-            self.imgHeight = 33
+            self.imgWidth = 24
+            self.imgHeight = 25
         elif obsType > 2:
             raise Exception("Obstacale Type should be 0-2. You put " + str(obsType))
         else:
@@ -115,7 +115,7 @@ class Obstacle:
         pass
 
     def draw(self):
-        display.draw_bitmap(self.imgPath, int(self.x), display.height - 33, 32, 33)
+        display.draw_bitmap(self.imgPath, int(self.x), display.height - self.imgHeight, self.imgWidth, self.imgHeight)
 
 if __name__ == '__main__':
     from ssd1309 import Display
