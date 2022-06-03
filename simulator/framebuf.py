@@ -19,7 +19,7 @@ def parse_mono_hmsb(hmsb_data: bytearray, width: int, height: int) -> pygame.Sur
     #   00111110 00000000
     #   10111101 11000000
     # Notice how the last 6 bits of each row's last byte are empty.
-    surface = pygame.Surface((width, height))
+    surface = pygame.Surface((width, height), pygame.SRCALPHA)
     x = 0
     y = 0
     for i in hmsb_data:
@@ -85,16 +85,22 @@ class FrameBuffer:
             return (0, 0, 0, 0)
         return (255, 255, 255, 255)
 
+    def pygame_to_color(self, pygame_color) -> int:
+        if pygame_color[0] == 0:
+            return 0
+        return 1
+
     def fill(self, color: int):
-        self.surface.set_colorkey(None)
         self.surface.fill(self.color_to_pygame(color))
 
     def fill_rect(self, x: int, y: int, width: int, height: int, color: int):
         pygame.draw.rect(self.surface, self.color_to_pygame(color), (x, y, width, height))
 
     def blit(self, fb, x: int, y: int, key=-1):
-        if key == -1:
-            self.surface.set_colorkey(None)
-        else:
-            self.surface.set_colorkey(self.color_to_pygame(key))
         self.surface.blit(fb.surface, (x, y))
+
+    def pixel(self, x, y, color=-1):
+        if color == -1:
+            color = self.surface.get_at((x, y))
+            return self.pygame_to_color(color)
+        self.surface.set_at((x, y), self.color_to_pygame(color))

@@ -47,15 +47,24 @@ class Main:
             self.draw()
             time.sleep_ms(16 - time.ticks_diff(time.ticks_ms(), preframe))
         
-    def detect_collision(self, dino, obs):
-        return (dino.x < obs.x + obs.img_width and dino.x + dino.img_width > obs.x and
-                dino.y < obs.y + obs.img_height and dino.img_height + dino.y > obs.y)
+    def dino_intersects_obstacle(self, dino, obs):
+        return display.bitmaps_collide(
+            "images/DinoStand1.mono",
+            dino.x,
+            display.height - dino.img_height - int(dino.y),
+            dino.img_width,
+            dino.img_height,
+            obs.img_path,
+            obs.x,
+            display.height - obs.img_height,
+            obs.img_width,
+            obs.img_height
+        )
         
     def loop(self):
         self.player.loop()
         for o in self.obs:
-            if self.detect_collision(self.player, o):
-                self.obs.pop(0)
+            if self.dino_intersects_obstacle(self.player, o):
                 self.end = True
                 print(self.player.score)
                 return

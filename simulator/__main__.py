@@ -34,6 +34,9 @@ def upscale_surface(surface: pygame.Surface, factor: float) -> pygame.Surface:
 def run():
     m = main.Main()
 
+    game_icon = pygame.image.load(os.path.join(os.path.dirname(__file__), 'icon.png'))
+    pygame.display.set_icon(game_icon)
+
     pygame.display.set_caption('Dino Run')
     width = main.display.width
     height = main.display.height
