@@ -127,7 +127,16 @@ class Dino:
         speed_width = bally.measure_text(str(self.speed))
         display.draw_text(display.width - score_width, 0, str(self.score), bally)
         display.draw_text(display.width - speed_width, 17, str(self.speed), bally)
-        
+
+        if m.end:
+            game_over_text = "Game Over"
+            game_over_width = bally.measure_text(game_over_text)
+            display.draw_text(display.width / 2 - game_over_width / 2, 17, game_over_text, bally)
+
+            image_width = 36
+            image_height = 32
+            display.draw_bitmap("images/GameOver.mono", display.width / 2 - image_width / 2, 28, image_width, image_height)
+
 class Obstacle:
     def __init__(self, obs_type):
         if obs_type == 0:
