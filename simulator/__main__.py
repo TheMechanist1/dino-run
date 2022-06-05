@@ -15,7 +15,7 @@ import time
 
 import main
 
-scale = 8
+scale = 3
 
 QUIT_KEYS = [pygame.K_ESCAPE, pygame.K_q]
 

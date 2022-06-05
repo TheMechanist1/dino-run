@@ -62,8 +62,7 @@ class Main:
 
         self.frames_until_next_obs -= 1
         if self.frames_until_next_obs <= 0:
-            new_obs = Obstacle(int(random.uniform(0,2)))
-            new_obs.x += random.uniform(0,5) + 30
+            new_obs = Obstacle(int(random.uniform(0, len(obstacle_sizes))))
             self.obs.append(new_obs)
             self.frames_until_next_obs = int(max(20, random.uniform(95, 130) - self.player.speed * 10))
 
@@ -137,24 +136,16 @@ class Dino:
             image_height = 32
             display.draw_bitmap("images/GameOver.mono", display.width / 2 - image_width / 2, 28, image_width, image_height)
 
+obstacle_sizes = [
+    (24, 25), # 0
+    (24, 25), # 1
+    (11, 25), # 2
+]
+
 class Obstacle:
     def __init__(self, obs_type):
-        if obs_type == 0:
-            self.img_path = "images/obs-0.mono"
-            self.img_width = 24
-            self.img_height = 25
-        elif obs_type == 1:
-            self.img_path = "images/obs-1.mono"
-            self.img_width = 24
-            self.img_height = 25
-        elif obs_type == 2:
-            self.img_path = "images/obs-2.mono"
-            self.img_width = 24
-            self.img_height = 25
-        elif obs_type > 2:
-            raise Exception("Obstacle Type should be 0-2. You put " + str(obs_type))
-        else:
-            raise Exception("Bro what are you doing?")
+        self.img_path = "images/obs-" + str(obs_type) + ".mono"
+        self.img_width, self.img_height = obstacle_sizes[obs_type]
         
         self.x = display.width
         self.y = 0
