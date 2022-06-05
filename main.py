@@ -22,7 +22,7 @@ class Main:
         self.obs = []
         self.end = False
         self.start_time = time.ticks_ms()
-        self.frames_until_next_obs = 0
+        self.frames_until_next_obs = 10
 
     def environment_specific_logic(self):
         # Used by simulator.
@@ -65,7 +65,7 @@ class Main:
             new_obs = Obstacle(int(random.uniform(0,2)))
             new_obs.x += random.uniform(0,5) + 30
             self.obs.append(new_obs)
-            self.frames_until_next_obs = random.uniform(50 - self.player.speed * 5, 100 - self.player.speed * 10)
+            self.frames_until_next_obs = int(max(20, random.uniform(95, 130) - self.player.speed * 10))
 
         for o in self.obs:
             o.speed = self.player.speed
@@ -91,10 +91,10 @@ class Main:
 class Dino:
     def __init__(self):
         self.score = 0
-        self.speed = 3
+        self.speed = 2.75
         self.vel_y = 0
-        self.acc_y = -0.46
-        self.jump_velocity = 6.4
+        self.acc_y = -0.4
+        self.jump_velocity = 6
         self.img_width = 22
         self.img_height = 24
         self.on_ground = True
@@ -117,7 +117,7 @@ class Dino:
             bitmap = "images/DinoDead.mono"
         elif not self.on_ground:
             bitmap = "images/DinoAir.mono"
-        elif m.frames % 6 < 3:
+        elif m.frames % 8 < 4:
             bitmap = "images/DinoStand0.mono"
         else:
             bitmap = "images/DinoStand1.mono"
