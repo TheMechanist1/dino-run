@@ -12,20 +12,17 @@ bally = XglcdFont('fonts/Bally7x9.c', 7, 9)
 
 class Main:
     def __init__(self):
-        self.player = Dino()
-        self.obs = [Obstacle(0)]
-        self.end = False
-        self.start_time = time.ticks_ms()
-        self.frames = 0
-        
+        self.reset()
         
     def reset(self):
+        self.frames = 0
         self.player = None
         self.obs = None
         self.player = Dino()
-        self.obs = [Obstacle(0)]
+        self.obs = []
         self.end = False
         self.start_time = time.ticks_ms()
+        self.frames_until_next_obs = 0
 
     def environment_specific_logic(self):
         # Used by simulator.
@@ -62,6 +59,14 @@ class Main:
         
     def loop(self):
         self.player.loop()
+
+        self.frames_until_next_obs -= 1
+        if self.frames_until_next_obs <= 0:
+            new_obs = Obstacle(int(random.uniform(0,2)))
+            new_obs.x += random.uniform(0,5) + 30
+            self.obs.append(new_obs)
+            self.frames_until_next_obs = random.uniform(50 - self.player.speed * 5, 100 - self.player.speed * 10)
+
         for o in self.obs:
             if self.dino_intersects_obstacle(self.player, o):
                 self.end = True
@@ -73,9 +78,6 @@ class Main:
                 self.player.score += 5
                 if self.player.score%25 == 0:
                     self.player.speed += 0.25
-                new_obs = Obstacle(int(random.uniform(0,2)))
-                new_obs.x += random.uniform(0,5) + 30
-                self.obs.append(new_obs)
             o.loop()
 
     def draw(self):
@@ -89,9 +91,10 @@ class Main:
 class Dino:
     def __init__(self):
         self.score = 0
-        self.speed = 1.5
+        self.speed = 3
         self.vel_y = 0
-        self.acc_y = -0.1
+        self.acc_y = -0.46
+        self.jump_velocity = 6.4
         self.img_width = 22
         self.img_height = 24
         self.on_ground = True
@@ -107,7 +110,7 @@ class Dino:
             self.y = 0
             self.vel_y = 0
             if button.value() == 0:
-                self.vel_y = 3
+                self.vel_y = self.jump_velocity
             
     def draw(self):
         if m.end:
