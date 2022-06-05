@@ -10,14 +10,13 @@ button = Pin(21, Pin.IN, Pin.PULL_UP)
 reset = Pin(22, Pin.IN, Pin.PULL_UP)
 bally = XglcdFont('fonts/Bally7x9.c', 7, 9)
 
-frames = 0
-
 class Main:
     def __init__(self):
         self.player = Dino()
         self.obs = [Obstacle(0)]
         self.end = False
         self.start_time = time.ticks_ms()
+        self.frames = 0
         
         
     def reset(self):
@@ -80,14 +79,13 @@ class Main:
             o.loop()
 
     def draw(self):
-        global frames
         display.clear_buffers()
         self.player.draw()
         for o in self.obs:
             o.draw()
         display.present()
-        frames += 1
-        
+        self.frames += 1
+       
 class Dino:
     def __init__(self):
         self.score = 0
@@ -96,26 +94,31 @@ class Dino:
         self.acc_y = -0.1
         self.img_width = 22
         self.img_height = 24
+        self.on_ground = True
         self.x = 0
         self.y = 0
         
     def loop(self):
         self.vel_y += self.acc_y
-        if ((self.y + self.vel_y) >= 0):
-            self.y += self.vel_y
-        else:
-            self.vel_y = 0
+        self.y += self.vel_y
+
+        self.on_ground = self.y <= 0
+        if self.on_ground:
             self.y = 0
-        
-        if button.value() == 0 and self.vel_y < 1 and self.y <= 0.1:
-            self.vel_y += 3
+            self.vel_y = 0
+            if button.value() == 0:
+                self.vel_y = 3
             
     def draw(self):
-        global frames
-        if frames%10 < 5:
-            display.draw_bitmap("images/DinoStand0.mono", 0, display.height - self.img_height - int(self.y), self.img_width, self.img_height)
+        if m.end:
+            bitmap = "images/DinoDead.mono"
+        elif not self.on_ground:
+            bitmap = "images/DinoAir.mono"
+        elif m.frames % 6 < 3:
+            bitmap = "images/DinoStand0.mono"
         else:
-            display.draw_bitmap("images/DinoStand1.mono", 0, display.height - self.img_height - int(self.y), self.img_width, self.img_height)
+            bitmap = "images/DinoStand1.mono"
+        display.draw_bitmap(bitmap, 0, display.height - self.img_height - int(self.y), self.img_width, self.img_height)
         
         score_width = bally.measure_text(str(self.score))
         speed_width = bally.measure_text(str(self.speed))
