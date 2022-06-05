@@ -108,9 +108,14 @@ class Dino:
         if self.on_ground:
             self.y = 0
             self.vel_y = 0
-            if button.value() == 0:
-                self.vel_y = self.jump_velocity
-            
+
+        jump = button.value() == 0
+        if jump and self.on_ground:
+            self.vel_y = self.jump_velocity
+        elif not jump:
+            if self.vel_y > 2:
+                self.vel_y = 2
+
     def draw(self):
         if m.end:
             bitmap = "images/DinoDead.mono"
