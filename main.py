@@ -154,7 +154,7 @@ class Obstacle:
     def draw(self):
         display.draw_bitmap(self.img_path, int(self.x), display.height - self.img_height, self.img_width, self.img_height)
 
+m = Main()
+
 if __name__ == '__main__':
-    m = Main()
-    while True:
-        m.main_game_loop()
+    m.main_game_loop()
