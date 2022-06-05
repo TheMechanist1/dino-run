@@ -68,10 +68,6 @@ class Main:
             self.frames_until_next_obs = random.uniform(50 - self.player.speed * 5, 100 - self.player.speed * 10)
 
         for o in self.obs:
-            if self.dino_intersects_obstacle(self.player, o):
-                self.end = True
-                print(self.player.score)
-                return
             o.speed = self.player.speed
             if o.is_off_screen():
                 self.obs.pop(0)
@@ -79,6 +75,10 @@ class Main:
                 if self.player.score%25 == 0:
                     self.player.speed += 0.25
             o.loop()
+            if self.dino_intersects_obstacle(self.player, o):
+                self.end = True
+                print(self.player.score)
+                return
 
     def draw(self):
         display.clear_buffers()
