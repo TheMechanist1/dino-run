@@ -876,7 +876,7 @@ class Display(object):
             for x in range(intersect_left - 1, intersect_right + 1):
                 for y in range(intersect_top - 1, intersect_bottom + 1):
                     try:
-                        if bitmap1_data.pixel(x - left1, y - top1) != 0 and bitmap2_data.pixel(x - left2, y - top2) != 0:
+                        if bitmap1_data.pixel(x - left1, y - top1) == 1 and bitmap2_data.pixel(x - left2, y - top2) == 1:
                             return True
                     except IndexError:
                         pass
