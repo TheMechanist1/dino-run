@@ -10,23 +10,19 @@ button = Pin(21, Pin.IN, Pin.PULL_UP)
 reset = Pin(22, Pin.IN, Pin.PULL_UP)
 bally = XglcdFont('fonts/Bally7x9.c', 7, 9)
 
-frames = 0
-
 class Main:
     def __init__(self):
-        self.player = Dino()
-        self.obs = [Obstacle(0)]
-        self.end = False
-        self.start_time = time.ticks_ms()
-        
+        self.reset()
         
     def reset(self):
+        self.frames = 0
         self.player = None
         self.obs = None
         self.player = Dino()
-        self.obs = [Obstacle(0)]
+        self.obs = []
         self.end = False
         self.start_time = time.ticks_ms()
+        self.frames_until_next_obs = 10
 
     def environment_specific_logic(self):
         # Used by simulator.
@@ -63,83 +59,98 @@ class Main:
         
     def loop(self):
         self.player.loop()
+
+        self.frames_until_next_obs -= 1
+        if self.frames_until_next_obs <= 0:
+            new_obs = Obstacle(int(random.uniform(0, len(obstacle_sizes))))
+            self.obs.append(new_obs)
+            self.frames_until_next_obs = int(max(20, random.uniform(95, 130) - self.player.speed * 10))
+
         for o in self.obs:
-            if self.dino_intersects_obstacle(self.player, o):
-                self.end = True
-                print(self.player.score)
-                return
             o.speed = self.player.speed
             if o.is_off_screen():
                 self.obs.pop(0)
                 self.player.score += 5
                 if self.player.score%25 == 0:
                     self.player.speed += 0.25
-                new_obs = Obstacle(int(random.uniform(0,2)))
-                new_obs.x += random.uniform(0,5) + 30
-                self.obs.append(new_obs)
             o.loop()
+            if self.dino_intersects_obstacle(self.player, o):
+                self.end = True
+                print(self.player.score)
+                return
 
     def draw(self):
-        global frames
         display.clear_buffers()
         self.player.draw()
         for o in self.obs:
             o.draw()
         display.present()
-        frames += 1
-        
+        self.frames += 1
+       
 class Dino:
     def __init__(self):
         self.score = 0
-        self.speed = 1.5
+        self.speed = 2.75
         self.vel_y = 0
-        self.acc_y = -0.1
+        self.acc_y = -0.4
+        self.jump_velocity = 6
         self.img_width = 22
         self.img_height = 24
+        self.on_ground = True
         self.x = 0
         self.y = 0
         
     def loop(self):
         self.vel_y += self.acc_y
-        if ((self.y + self.vel_y) >= 0):
-            self.y += self.vel_y
-        else:
-            self.vel_y = 0
+        self.y += self.vel_y
+
+        self.on_ground = self.y <= 0
+        if self.on_ground:
             self.y = 0
-        
-        if button.value() == 0 and self.vel_y < 1 and self.y <= 0.1:
-            self.vel_y += 3
-            
+            self.vel_y = 0
+
+        jump = button.value() == 0
+        if jump and self.on_ground:
+            self.vel_y = self.jump_velocity
+        elif not jump:
+            if self.vel_y > 2:
+                self.vel_y = 2
+
     def draw(self):
-        global frames
-        if frames%10 < 5:
-            display.draw_bitmap("images/DinoStand0.mono", 0, display.height - self.img_height - int(self.y), self.img_width, self.img_height)
+        if m.end:
+            bitmap = "images/DinoDead.mono"
+        elif not self.on_ground:
+            bitmap = "images/DinoAir.mono"
+        elif m.frames % 8 < 4:
+            bitmap = "images/DinoStand0.mono"
         else:
-            display.draw_bitmap("images/DinoStand1.mono", 0, display.height - self.img_height - int(self.y), self.img_width, self.img_height)
+            bitmap = "images/DinoStand1.mono"
+        display.draw_bitmap(bitmap, 0, display.height - self.img_height - int(self.y), self.img_width, self.img_height)
         
         score_width = bally.measure_text(str(self.score))
         speed_width = bally.measure_text(str(self.speed))
         display.draw_text(display.width - score_width, 0, str(self.score), bally)
         display.draw_text(display.width - speed_width, 17, str(self.speed), bally)
-        
+
+        if m.end:
+            game_over_text = "Game Over"
+            game_over_width = bally.measure_text(game_over_text)
+            display.draw_text(display.width / 2 - game_over_width / 2, 17, game_over_text, bally)
+
+            image_width = 36
+            image_height = 32
+            display.draw_bitmap("images/GameOver.mono", display.width / 2 - image_width / 2, 28, image_width, image_height)
+
+obstacle_sizes = [
+    (24, 25), # 0
+    (24, 25), # 1
+    (11, 25), # 2
+]
+
 class Obstacle:
     def __init__(self, obs_type):
-        if obs_type == 0:
-            self.img_path = "images/obs-0.mono"
-            self.img_width = 24
-            self.img_height = 25
-        elif obs_type == 1:
-            self.img_path = "images/obs-1.mono"
-            self.img_width = 24
-            self.img_height = 25
-        elif obs_type == 2:
-            self.img_path = "images/obs-2.mono"
-            self.img_width = 24
-            self.img_height = 25
-        elif obs_type > 2:
-            raise Exception("Obstacle Type should be 0-2. You put " + str(obs_type))
-        else:
-            raise Exception("Bro what are you doing?")
+        self.img_path = "images/obs-" + str(obs_type) + ".mono"
+        self.img_width, self.img_height = obstacle_sizes[obs_type]
         
         self.x = display.width
         self.y = 0
@@ -154,7 +165,7 @@ class Obstacle:
     def draw(self):
         display.draw_bitmap(self.img_path, int(self.x), display.height - self.img_height, self.img_width, self.img_height)
 
+m = Main()
+
 if __name__ == '__main__':
-    m = Main()
-    while True:
-        m.main_game_loop()
+    m.main_game_loop()

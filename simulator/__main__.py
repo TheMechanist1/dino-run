@@ -15,7 +15,7 @@ import time
 
 import main
 
-scale = 8
+scale = 3
 
 QUIT_KEYS = [pygame.K_ESCAPE, pygame.K_q]
 
@@ -32,7 +32,7 @@ def upscale_surface(surface: pygame.Surface, factor: float) -> pygame.Surface:
     return pygame.image.frombuffer(resized_image.tobytes(), resized_image.size, resized_image.mode)
 
 def run():
-    m = main.Main()
+    m = main.m
 
     game_icon = pygame.image.load(os.path.join(os.path.dirname(__file__), 'icon.png'))
     pygame.display.set_icon(game_icon)
@@ -68,8 +68,7 @@ def run():
 
     m.environment_specific_logic = handle_pygame_events
 
-    while True:
-        m.main_game_loop()
+    m.main_game_loop()
 
 if __name__ == '__main__':
     generate_mono_images.generate()
