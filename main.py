@@ -93,7 +93,7 @@ class Dino:
         self.speed = 2.75
         self.vel_y = 0
         self.acc_y = -0.4
-        self.jump_velocity = 6
+        self.jump_velocity = 6.5
         self.img_width = 22
         self.img_height = 24
         self.on_ground = True
@@ -135,11 +135,11 @@ class Dino:
         if m.end:
             game_over_text = "Game Over"
             game_over_width = bally.measure_text(game_over_text)
-            display.draw_text(display.width / 2 - game_over_width / 2, 17, game_over_text, bally)
+            display.draw_text(int(display.width / 2 - game_over_width / 2), 17, game_over_text, bally)
 
             image_width = 36
             image_height = 32
-            display.draw_bitmap("images/GameOver.mono", display.width / 2 - image_width / 2, 28, image_width, image_height)
+            display.draw_bitmap("images/GameOver.mono", int(display.width / 2 - image_width / 2), 28, image_width, image_height)
 
 obstacle_sizes = [
     (24, 25), # 0
